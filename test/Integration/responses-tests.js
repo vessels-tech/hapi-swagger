@@ -136,6 +136,57 @@ lab.experiment('responses', () => {
     expect(isValid).to.be.true();
   });
 
+  lab.test('when variables are parsed correctly for all types', async () => {
+    const routes = {
+      method: 'POST',
+      path: '/store/',
+      options: {
+        handler: Helper.defaultHandler,
+        tags: ['api'],
+        validate: {
+          query: Joi.object({
+            predicate: Joi.string().valid('valueA', 'valueB').required(),
+            //Handle when() scenario
+            optionalString: Joi.string().when('predicate', {
+              is: 'valueB',
+              then: Joi.required()
+            }),
+            optionalNumber: Joi.number().when('predicate', {
+              is: 'valueB',
+              then: Joi.required()
+            }),
+            optionalObj: Joi.object().when('predicate', {
+              is: 'valueB',
+              then: {
+                'itemA': Joi.string().required()
+              }
+            }),
+            // Handle Alternatives (existing method)
+            alternatives: Joi.alternatives().conditional('predicate', {
+              // is: 'valueB',
+              is: /^id_token( token)?$/,
+              then: Joi.string().required(),
+              otherwise: Joi.object()
+            }),
+          })
+        }
+      }
+    };
+
+    const server = await Helper.createServer({}, routes);
+    const response = await server.inject({ url: '/swagger.json' });
+    console.log("response is", JSON.stringify(response.result.paths['/store/'].post.parameters, null, 2))
+
+    const requiredCount = response.result.paths['/store/'].post.parameters.map(p => p.required).filter(t => t).length
+    // All params should be required
+    expect(requiredCount).to.equal(5)
+
+    // expect(response.result.paths['/store/'].post.parameters[0].required).to.equal(true);
+    // const isValid = await Validate.test(response.result);
+    // expect(isValid).to.be.true();
+  })
+
+
   lab.test('conditional variables produce `required = true`, not `required = [...]`', async () => {
     const routes = {
       method: 'POST',
