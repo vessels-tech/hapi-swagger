@@ -859,6 +859,7 @@ lab.experiment('responses', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject({ url: '/swagger.json' });
+
     expect(response.result.paths).to.equal({
       '/store/': {
         post: {
