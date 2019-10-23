@@ -145,9 +145,10 @@ lab.experiment('responses', () => {
         tags: ['api'],
         validate: {
           query: Joi.object({
-            nonce: Joi.string().when('response_type', {
+            nonce: Joi.alternatives().conditional('response_type', {
               is: /^id_token( token)?$/,
-              then: Joi.required()
+              then: Joi.string().required(),
+              otherwise: Joi.string()
             }),
             response_type: Joi.string()
               .allow('@hapi/code', 'id_token token', 'id_token')
@@ -159,8 +160,14 @@ lab.experiment('responses', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject({ url: '/swagger.json' });
+
+    console.log('response is', JSON.stringify(response.result.paths[/store/'], null, 2))
+
     expect(response.result.paths['/store/'].post.parameters[0].required).to.equal(true);
+
     const isValid = await Validate.test(response.result);
+    console.log('isValid is', isValid)
+
     expect(isValid).to.be.true();
   });
 
