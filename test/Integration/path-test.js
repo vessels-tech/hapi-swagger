@@ -206,7 +206,7 @@ lab.experiment('path', () => {
     let consumes = ['application/json', 'application/json;charset=UTF-8', 'application/json; charset=UTF-8'];
     let testRoutes = Hoek.clone(routes);
     testRoutes.options.validate.headers = Joi.object({
-      'content-type': Joi.string().valid(consumes)
+      'content-type': Joi.string().valid(...consumes)
     }).unknown();
 
     const server = await Helper.createServer({}, testRoutes);

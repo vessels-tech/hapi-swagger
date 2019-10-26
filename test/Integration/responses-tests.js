@@ -161,12 +161,11 @@ lab.experiment('responses', () => {
     const server = await Helper.createServer({}, routes);
     const response = await server.inject({ url: '/swagger.json' });
 
-    console.log('response is', JSON.stringify(response.result.paths['/store/'], null, 2))
+    // console.log('response is', JSON.stringify(response.result.paths['/store/'], null, 2))
 
     expect(response.result.paths['/store/'].post.parameters[0].required).to.equal(true);
 
     const isValid = await Validate.test(response.result);
-    console.log('isValid is', isValid)
 
     expect(isValid).to.be.true();
   });

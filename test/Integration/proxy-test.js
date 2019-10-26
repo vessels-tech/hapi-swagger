@@ -305,7 +305,7 @@ lab.experiment('proxies', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject(requestOptions);
-    console.log('response is', response.result)
+    // console.log('response is', response.result)
 
     expect(response.result.definitions).to.equal({
       testname: {
@@ -378,7 +378,7 @@ lab.experiment('proxies', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject(requestOptions);
-    console.log('response is', response.result)
+    // console.log('response is', response.result)
 
     expect(response.result.definitions).to.equal({
       testname: {
