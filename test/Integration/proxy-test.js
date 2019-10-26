@@ -247,7 +247,7 @@ lab.experiment('proxies', () => {
     expect(isValid).to.be.true();
   });
 
-  lab.test('adding facade for proxy using route options 3 - defination reuse', async () => {
+  lab.test('adding facade for proxy using route options 3 - definition reuse', async () => {
     routes = [
       {
         method: 'POST',
@@ -257,13 +257,13 @@ lab.experiment('proxies', () => {
           plugins: {
             'hapi-swagger': {
               id: 'microformatsapi1',
-              validate: {
+              validate: Joi.object({
                 payload: Joi.object({
                   a: Joi.number()
                     .required()
                     .description('the first number')
                 }).label('testname')
-              }
+              })
             }
           },
           handler: {
@@ -283,13 +283,13 @@ lab.experiment('proxies', () => {
           plugins: {
             'hapi-swagger': {
               id: 'microformatsapi2',
-              validate: {
+              validate: Joi.object({
                 payload: Joi.object({
                   a: Joi.number()
                     .required()
                     .description('the first number')
                 }).label('testname')
-              }
+              })
             }
           },
           handler: {
@@ -305,6 +305,7 @@ lab.experiment('proxies', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject(requestOptions);
+    console.log('response is', response.result)
 
     expect(response.result.definitions).to.equal({
       testname: {
@@ -320,7 +321,7 @@ lab.experiment('proxies', () => {
     });
   });
 
-  lab.test('adding facade for proxy using route options 4 - defination name clash', async () => {
+  lab.test('adding facade for proxy using route options 4 - definition name clash', async () => {
     routes = [
       {
         method: 'POST',
@@ -330,13 +331,14 @@ lab.experiment('proxies', () => {
           plugins: {
             'hapi-swagger': {
               id: 'microformatsapi1',
-              validate: {
+              validate: Joi.object({
                 payload: Joi.object({
                   a: Joi.number()
                     .required()
                     .description('the first number')
-                }).label('testname')
-              }
+                })
+                .label('testname')
+              })
             }
           },
           handler: {
@@ -356,11 +358,11 @@ lab.experiment('proxies', () => {
           plugins: {
             'hapi-swagger': {
               id: 'microformatsapi2',
-              validate: {
+              validate: Joi.object({
                 payload: Joi.object({
                   b: Joi.string().description('the string')
                 }).label('testname')
-              }
+              })
             }
           },
           handler: {
@@ -376,6 +378,8 @@ lab.experiment('proxies', () => {
 
     const server = await Helper.createServer({}, routes);
     const response = await server.inject(requestOptions);
+    console.log('response is', response.result)
+
     expect(response.result.definitions).to.equal({
       testname: {
         properties: {
