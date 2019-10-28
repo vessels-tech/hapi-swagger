@@ -84,6 +84,7 @@ lab.experiment('file', () => {
       .meta({ anything: 'test' })
       .required();
 
+    console.log('did we set the file?', routes.options.validate.payload.file.$_terms)
     const server = await Helper.createServer({}, routes);
 
     const response = await server.inject({ method: 'GET', url: '/swagger.json' });
